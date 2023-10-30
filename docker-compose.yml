@@ -5,10 +5,13 @@ services:
     image: postgres
     restart: always
     environment:
+      - POSTGRES_DB=example_db_1
+      - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     container_name: postgres
     volumes:
       - ./pgdata:/var/lib/postgresql/data
+      - ./assets/example_db_dvd1.sql:/docker-entrypoint-initdb.d/example_db_dvd1.sql
     ports:
       - '5432:5432'
 

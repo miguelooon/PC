@@ -1,0 +1,111 @@
+-- PROCEDURE: public.actor_create_table()
+
+-- DROP PROCEDURE IF EXISTS public.actor_create_table();
+
+CREATE OR REPLACE PROCEDURE public.actor_create_table(
+	)
+LANGUAGE 'sql'
+AS $BODY$
+-- Table: public.actor
+
+-- DROP TABLE IF EXISTS public.actor;
+
+CREATE TABLE IF NOT EXISTS public.actor
+(
+    actor_id integer NOT NULL DEFAULT nextval('actor_actor_id_seq'::regclass),
+    first_name character varying(45) COLLATE pg_catalog."default" NOT NULL,
+    last_name character varying(45) COLLATE pg_catalog."default" NOT NULL,
+    last_update timestamp without time zone NOT NULL DEFAULT now(),
+    CONSTRAINT actor_pkey PRIMARY KEY (actor_id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.actor
+    OWNER to postgres;
+-- Index: idx_actor_last_name
+
+-- DROP INDEX IF EXISTS public.idx_actor_last_name;
+
+CREATE INDEX IF NOT EXISTS idx_actor_last_name
+    ON public.actor USING btree
+    (last_name COLLATE pg_catalog."default" ASC NULLS LAST)
+    TABLESPACE pg_default;
+
+-- Trigger: last_updated
+
+-- DROP TRIGGER IF EXISTS last_updated ON public.actor;
+
+CREATE OR REPLACE TRIGGER last_updated
+    BEFORE UPDATE 
+    ON public.actor
+    FOR EACH ROW
+    EXECUTE FUNCTION public.last_updated();
+$BODY$;
+ALTER PROCEDURE public.actor_create_table()
+    OWNER TO postgres;
+
+----------------------------------------------------------------------
+-- PROCEDURE: public.actor_delete(integer)
+
+-- DROP PROCEDURE IF EXISTS public.actor_delete(integer);
+
+CREATE OR REPLACE PROCEDURE public.actor_delete(
+	IN id_ac integer)
+LANGUAGE 'sql'
+AS $BODY$
+DELETE FROM public.actor
+	WHERE actor_id=id_ac;
+$BODY$;
+ALTER PROCEDURE public.actor_delete(integer)
+    OWNER TO postgres;
+-----------------------------------------------------------------------
+-- PROCEDURE: public.actor_insert(character, character)
+
+-- DROP PROCEDURE IF EXISTS public.actor_insert(character, character);
+
+CREATE OR REPLACE PROCEDURE public.actor_insert(
+	IN actor_name character,
+	IN actor_last_name character)
+LANGUAGE 'sql'
+AS $BODY$
+INSERT INTO public.actor(
+	actor_id, first_name, last_name, last_update)
+	VALUES (nextval('actor_actor_id_seq'::regclass), actor_name, actor_last_name, now());
+$BODY$;
+ALTER PROCEDURE public.actor_insert(character, character)
+    OWNER TO postgres;
+----------------------------------------------------------------------
+-- PROCEDURE: public.actor_selection(integer)
+
+-- DROP PROCEDURE IF EXISTS public.actor_selection(integer);
+
+CREATE OR REPLACE PROCEDURE public.actor_selection(
+	IN id_ac integer,
+	OUT ac character varying)
+LANGUAGE 'sql'
+AS $BODY$
+SELECT first_name 
+	FROM public.actor WHERE actor_id = id_ac;
+	
+$BODY$;
+ALTER PROCEDURE public.actor_selection(integer)
+    OWNER TO postgres;
+------------------------------------------------------------------------
+-- PROCEDURE: public.actor_update(integer, integer, character varying, character varying)
+
+-- DROP PROCEDURE IF EXISTS public.actor_update(integer, integer, character varying, character varying);
+
+CREATE OR REPLACE PROCEDURE public.actor_update(
+	IN old_id integer,
+	IN new_id integer,
+	IN new_first character varying,
+	IN new_last character varying)
+LANGUAGE 'sql'
+AS $BODY$
+UPDATE public.actor
+	SET actor_id=new_id, first_name=new_first, last_name=new_last, last_update=now()
+	WHERE actor_id=old_id;
+$BODY$;
+ALTER PROCEDURE public.actor_update(integer, integer, character varying, character varying)
+    OWNER TO postgres;

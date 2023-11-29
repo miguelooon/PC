@@ -10,7 +10,14 @@ export class DbService {
   ) {}
 
   async obtenerCodigoProcedimiento(nombreProcedimiento: string): Promise<string> {
-    const query = `SELECT prosrc FROM pg_proc WHERE proname = $1 AND pronamespace = (SELECT oid FROM pg_namespace WHERE nspname = 'public')`;
+    const query = 
+    `SELECT 
+          prosrc 
+     FROM 
+          pg_proc 
+     WHERE 
+          proname = $1 AND pronamespace = (SELECT oid FROM pg_namespace WHERE nspname = 'public')`;
+
     const resultado = await this.entityManager.query(query, [nombreProcedimiento]);
     return resultado.length > 0 ? resultado[0].prosrc : null;
   }

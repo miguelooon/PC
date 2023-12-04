@@ -1,6 +1,9 @@
 const { exec } = require('child_process');
 const Spinner = require('cli-spinner').Spinner;
 
+
+// Funcion que activa el spinner cuando la herramienta se ejecuta.
+
 const startSpinnerAndExecute = (command, onSuccess, onError) => {
   const spinner = new Spinner('%s');
   spinner.setSpinnerString('|/-\\');
@@ -17,6 +20,7 @@ const startSpinnerAndExecute = (command, onSuccess, onError) => {
     onSuccess(stdout, stderr);
   });
 };
+
 
 module.exports = {
   startSpinnerAndExecute

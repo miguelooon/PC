@@ -3,15 +3,21 @@ const path = require('path');
 
 const envFilePath = path.join(__dirname, '../.env');
 
-const defaultValues = {
-    POSTGRES_DATABASE: 'example_db_2',
-    POSTGRES_USERNAME: 'postgres',
-    POSTGRES_PASSWORD: 'postgres'
-    
-  };
 
+
+// Valores que tomara si se deja el campo vacio.
+const defaultValues = {
+  POSTGRES_DATABASE: 'example_db_2',
+  POSTGRES_USERNAME: 'postgres',
+  POSTGRES_PASSWORD: 'postgres'
+    
+};
+
+// Funcion que actualiza los valores del .env
 const updateEnvVariables = (variables) => {
+  
   let envLines = [];
+
 
   if (fs.existsSync(envFilePath)) {
     const currentEnv = fs.readFileSync(envFilePath, 'utf8');
@@ -36,6 +42,11 @@ const updateEnvVariables = (variables) => {
   fs.writeFileSync(envFilePath, envLines.join('\n'));
 };
 
+
+
+
+
+// Funcion que verifica si las variables existen en el archivo .env
 const checkEnvVariablesExist = () => {
     if (fs.existsSync(envFilePath)) {
       const currentEnv = fs.readFileSync(envFilePath, 'utf8');
@@ -46,9 +57,12 @@ const checkEnvVariablesExist = () => {
     }
   
     return false;
-  };
+};
   
-  module.exports = {
-    updateEnvVariables,
-    checkEnvVariablesExist
-  };
+
+
+
+module.exports = {
+  updateEnvVariables,
+  checkEnvVariablesExist
+};

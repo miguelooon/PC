@@ -1,0 +1,200 @@
+export type MappedType = {
+    nativeType: string;
+    PsqlType: string;
+    commentPsqlType: string;
+};
+
+export type ITypeSize = {
+    nativeTypeSize: string;
+    PsqlTypeSize: string;
+}
+
+export abstract class PSQLMapper<ResultType> {
+    abstract execute(): Promise<ResultType>;
+
+    public supportsType(dataType: string): boolean {
+        switch (dataType) {
+            default:
+                return false;
+            +case 'bigint':
+            -case 'bigserial':
+            +case 'bit':
+            -case 'varbit':
+            -case 'bool':
+            -case 'box':
+            +case 'bytea':
+            -case 'cidr':
+            -case 'circle':
+            // case 'decimal':
+            -case 'float8':
+            -case 'inet':
+            +case 'int':
+            -case 'interval':
+            -case 'json':
+            -case 'jsonb':
+            -case 'line':
+            -case 'lseg':
+            -case 'macaddr':
+            -case 'mcaddr8':
+            +case 'money':
+            +case 'numeric':
+            -case 'path':
+            -case 'pg_lsn':
+            -case 'pg_snapshot':
+            -case 'point':
+            -case 'polygon':
+            -case 'float4':
+            +case 'smallint':
+            -case 'smallserial':
+            -case 'serial':
+            -case 'text':
+           // case 'smallmoney':
+           // case 'tinyint':
+           // case 'float':
+            +case 'date':
+            +case 'timestamp':
+           // case 'datetime':
+            +case 'timestamptz':
+            //case 'smalldatetime':
+            +case 'time':
+            -case 'timetz':
+            +case 'char':
+            +case 'varchar':
+            -case 'tsquery':
+            -case 'tsvector':
+            //case 'nchar':
+            //case 'nvarchar':
+            //case 'varbinary':
+            +case 'uuid':
+            -case 'xml':
+                return true;
+        }
+    }
+
+    public mapFromPsqlType(dataType: string, size: number, precision: number, scale: number): MappedType {
+        switch (dataType) {
+            default:
+                throw Error(`Type is not supported: dataType=${dataType}, size=${size}, precision=${precision}, scale=${scale}`);
+
+            /* Exact numerics */
+            case 'bigint':
+                return { nativeType: 'bigint', PsqlType: `BigInt()`, commentPsqlType: `bigint` };
+            case 'bit':
+                return { nativeType: 'boolean', PsqlType: `Bit()`, commentPsqlType: `bit` };
+            /*case 'decimal':
+                return {
+                    nativeType: 'number',
+                    PsqlType: `Decimal(${precision}, ${scale})`,
+                    commentPsqlType: `decimal(${precision}, ${scale})`,
+                }; */
+            case 'int':
+                return { nativeType: 'number', PsqlType: `Int()`, commentPsqlType: `int` };
+            case 'money':
+                return { nativeType: 'number', PsqlType: `Money()`, commentPsqlType: `money` };
+            case 'numeric':
+                return {
+                    nativeType: 'number',
+                    PsqlType: `Numeric(${precision}, ${scale})`,
+                    commentPsqlType: `numeric(${precision}, ${scale})`,
+                };
+            case 'smallint':
+                return { nativeType: 'number', PsqlType: `SmallInt()`, commentPsqlType: `smallint` };
+            /*case 'smallmoney':
+                return { nativeType: 'number', PsqlType: `SmallMoney()`, commentPsqlType: `smallmoney` };
+            case 'tinyint':
+                return { nativeType: 'number', PsqlType: `TinyInt()`, commentPsqlType: `tinyint` };
+*/
+            /* Approximate numerics */
+          /*  case 'float': {
+                const sizes = this.cleanPsqlTypeSize(size);
+                return { nativeType: 'number', PsqlType: `Float()`, commentPsqlType: `float(${sizes.PsqlTypeSize})` };
+            }*/
+            case 'float4': {
+                const sizes = this.cleanPsqlTypeSize(size);
+                return { nativeType: 'number', PsqlType: `Real()`, commentPsqlType: `real(${sizes.PsqlTypeSize})` };
+            }
+
+            /* Date and time */
+            case 'date':
+                return { nativeType: 'Date', PsqlType: `Date()`, commentPsqlType: `date` };
+            case 'timestamp':
+                return { nativeType: 'Date', PsqlType: `timestamp()`, commentPsqlType: `timestamp` };
+           // case 'datetime':
+           //     return { nativeType: 'Date', PsqlType: `DateTime()`, commentPsqlType: `datetime` };
+            case 'timestamptz':
+                return { nativeType: 'number', PsqlType: `Timestamptz(${scale})`, commentPsqlType: `timestamptz(${scale})` };
+           // case 'smalldatetime':
+           //     return { nativeType: 'Date', PsqlType: `SmallDateTime()`, commentPsqlType: `smalldatetime` };
+
+            case 'time':
+                return { nativeType: 'Date', PsqlType: `Time(${scale})`, commentPsqlType: `time(${scale})` };
+
+            /* Character strings */
+            case 'char': {
+                const sizes = this.cleanPsqlTypeSize(size);
+                return { nativeType: 'string', PsqlType: `Char(${sizes.nativeTypeSize})`, commentPsqlType: `char(${sizes.PsqlTypeSize})` };
+            }
+
+            case 'varchar': {
+                const sizes = this.cleanPsqlTypeSize(size);
+                return { nativeType: 'string', PsqlType: `VarChar(${sizes.nativeTypeSize})`, commentPsqlType: `varchar(${sizes.PsqlTypeSize})` };
+            }
+
+            /* Unicode character strings */
+           /* case 'nchar': {
+                const sizes = this.cleanPsqlUnicodeTypeSize(size);
+                return { nativeType: 'string', PsqlType: `NChar(${sizes.nativeTypeSize})`, commentPsqlType: `nchar(${sizes.PsqlTypeSize})` };
+            }
+*/
+/*            case 'nvarchar': {
+                const sizes = this.cleanPsqlUnicodeTypeSize(size);
+                return { nativeType: 'string', PsqlType: `NVarChar(${sizes.nativeTypeSize})`, commentPsqlType: `nvarchar(${sizes.PsqlTypeSize})` };
+            }
+            */
+            /* Binary strings */
+            case 'bytea': {
+                const sizes = this.cleanPsqlTypeSize(size);
+                return { nativeType: 'Buffer', PsqlType: `Bytea()`, commentPsqlType: `bytea(${sizes.PsqlTypeSize})` };
+            }
+
+           /* case 'varbinary': {
+                const sizes = this.cleanPsqlTypeSize(size);
+                return { nativeType: 'Buffer', PsqlType: `VarBinary(${sizes.nativeTypeSize})`, commentPsqlType: `varbinary(${sizes.PsqlTypeSize})` };
+            }*/
+
+
+            case 'uuid':
+                return { nativeType: 'string', PsqlType: `uuid()`, commentPsqlType: `uuid` };
+
+        }
+    }
+
+    public cleanPsqlTypeSize(paramSize: number): ITypeSize {
+        switch (paramSize) {
+            case -1: // -1 is equal to max size
+                return {
+                    nativeTypeSize: '',
+                    PsqlTypeSize: 'max',
+                }
+            default:
+                return {
+                    nativeTypeSize: String(paramSize),
+                    PsqlTypeSize: String(paramSize),
+                }
+        }
+    }
+    public cleanPsqlUnicodeTypeSize(paramSize: number): ITypeSize {
+        switch (paramSize) {
+            case -1: // -1 is equal to max size
+                return {
+                    nativeTypeSize: '',
+                    PsqlTypeSize: 'max',
+                }
+            default:
+                return {
+                    nativeTypeSize: String(paramSize / 2),
+                    PsqlTypeSize: String(paramSize / 2),
+                }
+        }
+    }
+}

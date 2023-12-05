@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const envFilePath = path.join(__dirname, '../.env');
+const envFilePath = path.join(__dirname, '../../.env');
 
 
 

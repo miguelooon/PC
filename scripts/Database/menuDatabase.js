@@ -1,4 +1,4 @@
-const { updateEnvVariables} = require('./.envManager');
+const { updateEnvVariables} = require('../Nest/.envManager');
 const inquirer = require('inquirer');
 
 

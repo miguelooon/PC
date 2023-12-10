@@ -4,6 +4,7 @@ const { menuDatabase,modifyDatabaseConfig} = require('./Database/menuDatabase');
 const { startApplication } = require('./Nest/startApp');
 const { enviarNombreProcedimiento } = require('./Procedure/sendProcedure');
 const  {menuProcedure} = require('./Procedure/menuProcedure')
+const  {enviarParametros} = require('./Procedure/sendParameters')
 
 
 
@@ -42,14 +43,35 @@ const mainMenu = async () => {
     const nombreProcedimiento = process.argv[2];
     if (nombreProcedimiento) {
 
+
+      //Verificamos si existe el procedimiento. Si va todo bien, devuelve los parametros asociados al procedimiento almacenado.
       const tipos = await enviarNombreProcedimiento(nombreProcedimiento);
+
+      
 
 
       if (tipos.length > 0) {
+
+        // Invoacamos el menu de parametros.
         const respuestas = await menuProcedure(tipos);
 
-        //MOMENTANEO!
-        console.log('Respuestas del usuario:', respuestas);
+        respuestas.nombreProcedimiento = nombreProcedimiento;
+
+
+        //Enviamos los parametros
+
+
+        const codigo_generado = await enviarParametros(respuestas);
+
+        
+
+        
+       
+        
+       
+        
+
+
 
 
 

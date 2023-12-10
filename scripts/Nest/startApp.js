@@ -1,22 +1,33 @@
 const { exec } = require('child_process');
-const fs = require('fs');
 
 const startApplication = () => {
   console.log('Inicializando NestJS...');
 
-  exec('npm run start:dev', (error, stdout, stderr) => {
+  const nestProcess = exec('npm run start:dev', (error, stdout, stderr) => {
     if (error) {
       console.error(`Error al ejecutar 'npm run start:dev': ${error.message}`);
       return;
     }
 
-    fs.writeFileSync('./Logs/out.log', stdout);
-    fs.writeFileSync('./Logs/err.log', stderr);
+    if (stderr) {
+      console.error(`stderr: ${stderr}`);
+      return;
+    }
 
-    console.log('NestJS iniciado.');
+    console.log(`stdout: ${stdout}`);
+  });
+
+  // Escuchar la salida estándar y errores del proceso hijo
+  nestProcess.stdout.on('data', (data) => {
+    console.log(`stdout: ${data}`);
+  });
+
+  nestProcess.stderr.on('data', (data) => {
+    console.error(`stderr: ${data}`);
   });
 };
 
 module.exports = {
   startApplication
 };
+

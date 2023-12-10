@@ -1,0 +1,25 @@
+import { Injectable } from '@nestjs/common';
+import { InjectEntityManager } from '@nestjs/typeorm';
+import { EntityManager } from 'typeorm';
+
+@Injectable()
+export class ActorService {
+  constructor(
+    @InjectEntityManager() private entityManager: EntityManager
+  ) {}
+
+  async insertActor(actorData: { actor_name: string; actor_last_name: string }): Promise<any> {
+    const query = `
+      INSERT INTO public.actor (
+        actor_id, first_name, last_name, last_update
+      )
+      VALUES (
+        nextval('actor_actor_id_seq'::regclass), 
+        'Miguel', 
+        'Garcia', 
+        now()
+      );
+    `;
+    return await this.entityManager.query(query);
+  }
+}

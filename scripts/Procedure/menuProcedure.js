@@ -61,6 +61,8 @@ const validarCharacter = valor => {
 // ... Más funciones de validación para otros tipos ...
 
 const menuProcedure = async (parametros) => {
+
+  console.clear();
   const preguntas = parametros.map(param => {
     let validate;
 
@@ -101,3 +103,4 @@ const menuProcedure = async (parametros) => {
 module.exports = {
   menuProcedure
 };
+

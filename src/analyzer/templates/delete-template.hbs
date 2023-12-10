@@ -1,0 +1,4 @@
+// delete-actor-template.hbs
+async deleteActor({{idAc}}: {{idAc}}Type): Promise<void> {
+  await this.actorRepository.delete({ actorId: {{idAc}} });
+}

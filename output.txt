@@ -15,8 +15,8 @@ export class ActorService {
       )
       VALUES (
         nextval('actor_actor_id_seq'::regclass), 
-        'Miguel', 
-        'Garcia', 
+        'miguel', 
+        'garcia1', 
         now()
       );
     `;

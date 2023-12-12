@@ -34,6 +34,13 @@ export class DbconnectController {
     }
   }
 
+  @Get('existeProcedimiento/:nombre')
+  async existeProcedimiento(@Param('nombre') nombreProcedimiento: string): Promise<boolean> {
+    return this.dbService.existeProcedimiento(nombreProcedimiento);
+  }
+
+  
+
   
 
 

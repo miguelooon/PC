@@ -18,12 +18,14 @@ import { DbService } from './dbconnect.service';
         synchronize: configService.getOrThrow('POSTGRES_SYNCHRONIZE'),
       }),
       inject: [ConfigService],
+     
       
     }),
     
   ],
   controllers: [DbconnectController],
   providers: [DbService],
+  exports: [DbService]
 })
 
 export class DbconnectModule {}
